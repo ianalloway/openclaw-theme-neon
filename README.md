@@ -5,8 +5,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-brightgreen?style=for-the-badge)](https://openclaw.ai)
 
-![Theme Preview](docs/preview.png)
-
 ## Features
 
 - 🌧️ **Matrix rain** background animation (CSS-only, configurable density)
