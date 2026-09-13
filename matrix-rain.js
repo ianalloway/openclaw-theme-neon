@@ -19,7 +19,7 @@ const MatrixRain = (() => {
   const LATIN = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
   const CHARS = KATAKANA + LATIN;
 
-  let canvas, ctx, drops, animId;
+  let canvas, ctx, drops, animId, onResize;
   let cols, fontSize, density, speed, color;
 
   function getCSSVar(name, fallback) {
@@ -100,10 +100,11 @@ const MatrixRain = (() => {
     readConfig();
     resize();
 
-    window.addEventListener('resize', () => {
+    onResize = () => {
       readConfig();
       resize();
-    });
+    };
+    window.addEventListener('resize', onResize);
 
     requestAnimationFrame(draw);
     console.log('[MatrixRain] Initialized. density=%s speed=%s', density, speed);
@@ -111,17 +112,19 @@ const MatrixRain = (() => {
 
   function destroy() {
     if (animId) cancelAnimationFrame(animId);
-    window.removeEventListener('resize', resize);
-    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (onResize) window.removeEventListener('resize', onResize);
+    onResize = null;
+    if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  /** Change variant on the fly */
+  /** Change variant on the fly (primary accent for rain + glow). */
   function setVariant(variant) {
     const variants = {
-      neon:       '#00ff41',
-      'neon-blue': '#00d4ff',
-      'neon-amber':'#ffcc00',
-      'neon-red':  '#ff3333',
+      neon:           '#00ff41',
+      'neon-blue':    '#00d4ff',
+      'neon-amber':   '#ffb000',
+      'neon-red':     '#ff3333',
+      'neon-dracula': '#50fa7b',
     };
     const c = variants[variant];
     if (c) {

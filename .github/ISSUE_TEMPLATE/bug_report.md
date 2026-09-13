@@ -21,9 +21,9 @@ assignees: ianalloway
 <!-- What actually happened -->
 
 ## Environment
-- OS: 
-- Version: 
-- Node/Python version: 
+- OS:
+- Browser:
+- Theme variant (neon / neon-blue / neon-amber / neon-red / neon-dracula):
 
 ## Additional Context
 <!-- Logs, screenshots, anything else relevant -->

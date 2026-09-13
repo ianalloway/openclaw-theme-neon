@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>openclaw-theme-neon — preview</title>
+  <link rel="stylesheet" href="../theme.css" />
+  <style>
+    body { margin: 0; min-height: 100vh; position: relative; }
+    .preview-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+      display: grid;
+      gap: 20px;
+    }
+    .preview-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preview-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .preview-controls label {
+      color: var(--neon-text-mid);
+      font-size: 0.85em;
+    }
+    .preview-controls select,
+    .preview-controls button {
+      font-family: var(--neon-font-mono);
+      background: var(--neon-surface);
+      color: var(--neon-text);
+      border: 1px solid var(--neon-border-mid);
+      border-radius: var(--neon-radius-sm);
+      padding: 8px 12px;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .hint { color: var(--neon-text-soft); font-size: 0.85em; }
+    footer a { margin-right: 12px; }
+  </style>
+</head>
+<body>
+  <canvas class="neon-matrix-rain" id="matrix-rain"></canvas>
+
+  <main class="preview-shell">
+    <header class="preview-header neon-panel" style="padding: 16px 20px;">
+      <div>
+        <h1 style="margin: 0 0 6px;">OPENCLAW NEON</h1>
+        <p class="hint" style="margin: 0;">Local theme preview — switch variants, toggle matrix rain.</p>
+      </div>
+      <div class="preview-controls">
+        <label for="variant">Variant</label>
+        <select id="variant" aria-label="Theme variant">
+          <option value="">neon (default)</option>
+          <option value="neon-blue">neon-blue</option>
+          <option value="neon-amber">neon-amber</option>
+          <option value="neon-red">neon-red</option>
+          <option value="neon-dracula">neon-dracula</option>
+        </select>
+        <button type="button" id="toggle-rain" class="neon-btn">Toggle rain</button>
+      </div>
+    </header>
+
+    <section class="neon-terminal">
+      <div class="neon-terminal-content">
+        <p style="margin: 0 0 8px; color: var(--neon-text-soft);">session · preview</p>
+        <p style="margin: 0;">&gt; How can I help you today?</p>
+        <span class="neon-cursor" aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="neon-panel" style="padding: 16px;">
+        <h2 style="margin-top: 0;">Panels</h2>
+        <p>Dark-glass surfaces with glow on hover. Use <code>.neon-panel</code> / <code>.neon-panel-active</code>.</p>
+        <div class="row">
+          <span class="neon-badge neon-badge-online">online</span>
+          <span class="neon-badge" style="color: var(--neon-secondary);">hot</span>
+        </div>
+      </div>
+      <div class="neon-panel neon-panel-active" style="padding: 16px;">
+        <h2 style="margin-top: 0;">Active panel</h2>
+        <p>Primary border + glow for focused surfaces.</p>
+        <div class="row">
+          <button class="neon-btn neon-btn-primary" type="button">Primary</button>
+          <button class="neon-btn neon-btn-pink" type="button">Secondary</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="neon-panel" style="padding: 16px;">
+      <h2 style="margin-top: 0;">Messages</h2>
+      <div class="neon-message neon-message-user">Can you restyle my OpenClaw UI?</div>
+      <div class="neon-message neon-message-assistant">
+        Drop <code>theme.css</code>, <code>variables.css</code>, and <code>matrix-rain.js</code> into your themes folder, then set <code>theme: neon</code>.
+      </div>
+      <div class="neon-prompt" style="margin-top: 12px;">
+        <input class="neon-input" placeholder="Type a prompt…" aria-label="Prompt" />
+      </div>
+    </section>
+
+    <footer class="hint">
+      <a href="https://github.com/ianalloway/openclaw-theme-neon">GitHub repo</a>
+      <a href="../README.md">README</a>
+      Open this file via a static server so CSS <code>@import</code> and relative paths resolve
+      (for example <code>python -m http.server</code> from the repo root, then visit
+      <code>/docs/preview.html</code>).
+    </footer>
+  </main>
+
+  <link id="variant-link" rel="stylesheet" href="" />
+  <script src="../matrix-rain.js"></script>
+  <script>
+    const variantSelect = document.getElementById('variant');
+    const variantLink = document.getElementById('variant-link');
+    const rainCanvas = document.getElementById('matrix-rain');
+    const toggleRain = document.getElementById('toggle-rain');
+
+    variantSelect.addEventListener('change', () => {
+      const v = variantSelect.value;
+      variantLink.href = v ? `../variants/${v}.css` : '';
+      if (window.MatrixRain && typeof MatrixRain.setVariant === 'function') {
+        MatrixRain.setVariant(v || 'neon');
+      }
+    });
+
+    toggleRain.addEventListener('click', () => {
+      const hidden = rainCanvas.style.display === 'none';
+      rainCanvas.style.display = hidden ? '' : 'none';
+    });
+  </script>
+</body>
+</html>
