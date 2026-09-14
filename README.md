@@ -7,6 +7,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-brightgreen)](https://openclaw.ai)
 [![CSS + JS](https://img.shields.io/badge/stack-CSS%20%2B%20JS-00ff41)](theme.css)
+[![Live preview](https://img.shields.io/badge/preview-GitHub%20Pages-00ff41)](https://ianalloway.github.io/openclaw-theme-neon/)
+
+**Live preview:** [ianalloway.github.io/openclaw-theme-neon](https://ianalloway.github.io/openclaw-theme-neon/) — variant switcher, matrix rain toggle, CSS variable editor.
 
 ## Features
 
@@ -50,9 +53,15 @@ openclaw skill install openclaw-theme-neon
 | `theme.css` | Components (panels, terminal, buttons, badges) |
 | `matrix-rain.js` | Canvas rain (`MatrixRain.init()`) |
 | `variants/*.css` | Optional palettes loaded after the defaults |
-| `docs/preview.html` | Local interactive preview |
+| `docs/preview.html` | Interactive preview (also on GitHub Pages) |
 
-## Local preview
+## Preview
+
+**Live (GitHub Pages):** https://ianalloway.github.io/openclaw-theme-neon/
+
+Includes a variant switcher, matrix-rain toggle, and a CSS variable editor sidebar. The site is published from the `main` branch root so `theme.css`, `matrix-rain.js`, and `variants/` resolve next to `docs/preview.html`.
+
+### Local preview
 
 No build step. From the repo root:
 
@@ -61,7 +70,7 @@ python -m http.server 8765
 # open http://localhost:8765/docs/preview.html
 ```
 
-The preview page includes a variant switcher and matrix-rain toggle. Screenshot assets are intentionally not checked in — capture your own from this preview if you need README images ([issue #3](https://github.com/ianalloway/openclaw-theme-neon/issues/3)).
+Screenshot assets are intentionally not checked in — capture your own from this preview if you need README images ([issue #3](https://github.com/ianalloway/openclaw-theme-neon/issues/3)).
 
 ## ASCII vibe check
 
@@ -128,7 +137,7 @@ theme: neon-blue   # or neon-amber, neon-red, neon-dracula
 ## Related issues
 
 - [#1](https://github.com/ianalloway/openclaw-theme-neon/issues/1) Dracula variant → shipped as `variants/neon-dracula.css`
-- [#2](https://github.com/ianalloway/openclaw-theme-neon/issues/2) Theme preview page → starter at `docs/preview.html` (GitHub Pages can point here later)
+- [#2](https://github.com/ianalloway/openclaw-theme-neon/issues/2) Theme preview page → [GitHub Pages preview](https://ianalloway.github.io/openclaw-theme-neon/)
 - [#3](https://github.com/ianalloway/openclaw-theme-neon/issues/3) README screenshots → use the preview to capture real shots; no placeholder image files
 
 ## Author
