@@ -19,7 +19,9 @@ const MatrixRain = (() => {
   const LATIN = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
   const CHARS = KATAKANA + LATIN;
 
-  let canvas, ctx, drops, animId, onResize;
+  let canvas, ctx, drops, onResize, onVisibility, motionQuery, onMotion;
+  let animId = null;
+  let originalDisplay = '';
   let cols, fontSize, density, speed, color;
 
   function getCSSVar(name, fallback) {
@@ -30,8 +32,10 @@ const MatrixRain = (() => {
   }
 
   function readConfig() {
-    density = parseFloat(getCSSVar('--matrix-density', '0.03'));
-    speed   = parseFloat(getCSSVar('--matrix-speed',   '1.0'));
+    const rawDensity = parseFloat(getCSSVar('--matrix-density', '0.03'));
+    const rawSpeed = parseFloat(getCSSVar('--matrix-speed', '1.0'));
+    density = Number.isFinite(rawDensity) ? Math.min(0.1, Math.max(0.01, rawDensity)) : 0.03;
+    speed = Number.isFinite(rawSpeed) && rawSpeed > 0 ? rawSpeed : 1;
     color   = getCSSVar('--neon-primary', '#00ff41');
   }
 
@@ -49,6 +53,8 @@ const MatrixRain = (() => {
   const BASE_FPS = 20;
 
   function draw(timestamp) {
+    animId = null;
+    if (!ctx || document.hidden || motionQuery.matches) return;
     animId = requestAnimationFrame(draw);
 
     const interval = 1000 / (BASE_FPS * speed);
@@ -84,19 +90,18 @@ const MatrixRain = (() => {
   }
 
   function init(canvasId = 'matrix-rain') {
+    // Repeated init calls must replace the old loop and its listeners.
+    destroy();
     canvas = document.getElementById(canvasId);
     if (!canvas) {
       console.warn('[MatrixRain] Canvas not found:', canvasId);
       return;
     }
 
-    // Respect reduced motion preference
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      canvas.style.display = 'none';
-      return;
-    }
-
     ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    originalDisplay = canvas.style.display;
+    motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     readConfig();
     resize();
 
@@ -105,16 +110,44 @@ const MatrixRain = (() => {
       resize();
     };
     window.addEventListener('resize', onResize);
+    onVisibility = syncAnimation;
+    onMotion = syncAnimation;
+    document.addEventListener('visibilitychange', onVisibility);
+    motionQuery.addEventListener('change', onMotion);
+    syncAnimation();
+  }
 
-    requestAnimationFrame(draw);
-    console.log('[MatrixRain] Initialized. density=%s speed=%s', density, speed);
+  function syncAnimation() {
+    if (!ctx) return;
+    canvas.style.display = motionQuery.matches ? 'none' : originalDisplay;
+    if (document.hidden || motionQuery.matches) {
+      if (animId !== null) cancelAnimationFrame(animId);
+      animId = null;
+      lastTime = 0;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    } else if (animId === null) {
+      lastTime = 0;
+      animId = requestAnimationFrame(draw);
+    }
   }
 
   function destroy() {
-    if (animId) cancelAnimationFrame(animId);
+    if (animId !== null) cancelAnimationFrame(animId);
+    animId = null;
     if (onResize) window.removeEventListener('resize', onResize);
+    if (onVisibility) document.removeEventListener('visibilitychange', onVisibility);
+    if (motionQuery && onMotion) motionQuery.removeEventListener('change', onMotion);
     onResize = null;
-    if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    onVisibility = null;
+    onMotion = null;
+    motionQuery = null;
+    if (ctx && canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = originalDisplay;
+    }
+    canvas = null;
+    ctx = null;
+    lastTime = 0;
   }
 
   /** Change variant on the fly (primary accent for rain + glow). */
@@ -137,9 +170,9 @@ const MatrixRain = (() => {
 })();
 
 // Auto-init if DOM is already ready
-if (document.readyState === 'loading') {
+if (typeof document !== 'undefined' && document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => MatrixRain.init());
-} else {
+} else if (typeof document !== 'undefined') {
   MatrixRain.init();
 }
 

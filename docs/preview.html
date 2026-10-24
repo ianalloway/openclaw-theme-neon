@@ -140,8 +140,8 @@
             <option value="neon-red">neon-red</option>
             <option value="neon-dracula">neon-dracula</option>
           </select>
-          <button type="button" id="toggle-rain" class="neon-btn">Toggle rain</button>
-          <button type="button" id="toggle-editor" class="neon-btn">Variables</button>
+          <button type="button" id="toggle-rain" class="neon-btn" aria-pressed="true" aria-controls="matrix-rain">Rain: on</button>
+          <button type="button" id="toggle-editor" class="neon-btn" aria-expanded="true" aria-controls="var-editor">Variables</button>
         </div>
       </header>
 
@@ -227,6 +227,7 @@
       const varEditor = document.getElementById('var-editor');
       const varFields = document.getElementById('var-fields');
       const resetVars = document.getElementById('reset-vars');
+      let rainEnabled = true;
 
       const EDITABLE = [
         { key: '--neon-primary', type: 'color' },
@@ -265,17 +266,13 @@
       }
 
       function applyRainConfig() {
-        if (window.MatrixRain && typeof MatrixRain.init === 'function') {
-          // Re-read CSS vars used by rain without full re-init if possible
-          if (typeof MatrixRain.setVariant === 'function') {
-            // noop path: force readConfig via setVariant with current primary
-          }
-        }
-        // Destroy + re-init so density/speed/opacity pick up edits
         if (window.MatrixRain) {
           MatrixRain.destroy();
-          MatrixRain.init();
+          rainCanvas.style.display = rainEnabled ? '' : 'none';
+          if (rainEnabled) MatrixRain.init();
         }
+        toggleRain.setAttribute('aria-pressed', String(rainEnabled));
+        toggleRain.textContent = rainEnabled ? 'Rain: on' : 'Rain: off';
       }
 
       function buildEditor() {
@@ -298,6 +295,7 @@
             color.title = current;
             const text = document.createElement('input');
             text.type = 'text';
+            text.setAttribute('aria-label', key + ' color value');
             text.value = current || color.value;
             const sync = (val) => {
               document.documentElement.style.setProperty(key, val);
@@ -341,10 +339,7 @@
       function onVariantReady() {
         clearInlineOverrides();
         buildEditor();
-        if (window.MatrixRain) {
-          MatrixRain.destroy();
-          MatrixRain.init();
-        }
+        applyRainConfig();
       }
 
       variantSelect.addEventListener('change', () => {
@@ -364,26 +359,25 @@
       });
 
       toggleRain.addEventListener('click', () => {
-        const hidden = rainCanvas.style.display === 'none';
-        rainCanvas.style.display = hidden ? '' : 'none';
+        rainEnabled = !rainEnabled;
+        applyRainConfig();
       });
 
       toggleEditor.addEventListener('click', () => {
         const hidden = varEditor.style.display === 'none';
         varEditor.style.display = hidden ? '' : 'none';
+        toggleEditor.setAttribute('aria-expanded', String(hidden));
       });
 
       resetVars.addEventListener('click', () => {
         clearInlineOverrides();
         buildEditor();
-        if (window.MatrixRain) {
-          MatrixRain.destroy();
-          MatrixRain.init();
-        }
+        applyRainConfig();
       });
 
       script.addEventListener('load', () => {
         buildEditor();
+        applyRainConfig();
       });
     })();
   </script>

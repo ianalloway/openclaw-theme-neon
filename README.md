@@ -27,6 +27,7 @@
 
 ```bash
 git clone https://github.com/ianalloway/openclaw-theme-neon.git
+cd openclaw-theme-neon
 mkdir -p ~/.openclaw/themes/neon
 cp theme.css variables.css matrix-rain.js ~/.openclaw/themes/neon/
 # optional variants:
@@ -111,7 +112,17 @@ In HTML:
 <script src="matrix-rain.js"></script>
 ```
 
-`matrix-rain.js` auto-inits on DOM ready. Call `MatrixRain.destroy()` to tear down, or `MatrixRain.setVariant('neon-blue')` to retint the rain primary.
+`matrix-rain.js` auto-inits on DOM ready. Calling `MatrixRain.init()` again safely replaces the existing animation. Call `MatrixRain.destroy()` to cancel it and remove listeners, or `MatrixRain.setVariant('neon-blue')` to retint the rain primary.
+
+Rain pauses while the tab is hidden and responds immediately when the system's reduced-motion preference changes. The preview's rain toggle stops the animation as well as hiding the canvas. Invalid density or speed values fall back to usable settings.
+
+## Development checks
+
+The animation lifecycle has a dependency-free regression suite. With Node.js 20 or newer:
+
+```bash
+node --test tests/*.test.cjs
+```
 
 ## Variants
 
