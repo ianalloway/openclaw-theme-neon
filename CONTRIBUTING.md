@@ -1,6 +1,6 @@
 # Contributing to openclaw-theme-neon
 
-Thanks for your interest in contributing! This repo is a **pure CSS + JS** OpenClaw theme (no npm/Python app runtime).
+Thanks for your interest in contributing! This repo is an **OpenClaw plugin theme** (`openclaw.plugin.json` + generated `themes/*.json`) plus a pure CSS + JS kit for web pages. There is no app runtime; the plugin's `index.js` is a no-op.
 
 ## Getting Started
 
@@ -28,13 +28,25 @@ Key files:
 - `matrix-rain.js` — canvas rain helper
 - `variants/*.css` — optional palettes
 - `docs/preview.html` — interactive demo
+- `openclaw.plugin.json` — OpenClaw plugin manifest (theme ids, names, descriptions)
+- `themes/*.json` — **generated** OpenClaw theme definitions; edit the CSS, then run `node scripts/build-plugin-themes.mjs`
+- `scripts/check-plugin.mjs` — freshness, contrast, and real-OpenClaw load check (see README → Development checks)
+
+### Bumping the OpenClaw pin
+
+CI loads the plugin with the OpenClaw version in `.openclaw-version`, plus a
+non-blocking run against `openclaw@latest`. To move the pin, run the check
+against the new version, fix any reported theme diagnostics, and update
+`.openclaw-version` and the `>=` floors in `package.json` (`peerDependencies`,
+`openclaw.compat.pluginApi`, `openclaw.install.minHostVersion`) only if the
+themes now rely on newer features, such as manifest `backgrounds`.
 
 ## Code Style
 
 - Keep CSS custom properties on `:root`; variants should only override tokens
 - Prefer existing class prefixes (`neon-*`) over new naming schemes
 - Respect `prefers-reduced-motion` for animations and rain
-- No generated screenshot binaries unless they are real captures of the preview
+- No generated screenshot binaries unless they are real captures of the preview (the `assets/` backgrounds are theme artwork, rendered by `scripts/render-backgrounds.py`)
 
 ## Pull Request Guidelines
 
