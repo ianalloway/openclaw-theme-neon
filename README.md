@@ -41,7 +41,10 @@ openclaw plugins install ./openclaw-theme-neon
 ```
 
 OpenClaw asks you to confirm the non-ClawHub source. The plugin ships palettes
-only: no tools, hooks, network access, or config. Restart the Gateway, or run
+only: no tools, hooks, network access, or config. After a git install,
+`openclaw plugins doctor` shows a `provenance-invalid` warning ("OpenClaw can't verify
+where this plugin came from"). OpenClaw shows that for every git install outside
+ClawHub or npm. It doesn't affect the themes. Restart the Gateway, or run
 `openclaw plugins reload theme-neon` if it is already running. Then pick a theme in
 **Settings → Appearance**, or ask your agent, for example "switch to the Neon Dracula theme".
 
