@@ -108,6 +108,10 @@ Includes a variant switcher, matrix-rain toggle, and a CSS variable editor sideb
 
 Choose a variant, adjust its colors or rain settings, and select **Download CSS** in the variable editor. Load the downloaded `neon-custom.css` after `theme.css` on your own page to reuse the current palette and token values.
 
+The editor measures body text against the page background as you change colors or variants.
+Its AA indicator uses the 4.5:1 threshold for normal text. Translucent text is measured
+over the chosen opaque background.
+
 ### Local preview
 
 No build step. From the repo root:
