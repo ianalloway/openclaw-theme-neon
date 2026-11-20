@@ -85,6 +85,15 @@
       font-size: 1rem;
     }
     .var-editor .hint { margin: 0 0 16px; }
+    #text-contrast {
+      display: block;
+      margin-bottom: 12px;
+      padding: 6px 8px;
+      color: CanvasText;
+      background: Canvas;
+      border-radius: var(--neon-radius-sm);
+      font-size: 0.8em;
+    }
     .var-row {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -194,6 +203,7 @@
     <aside class="var-editor neon-panel" id="var-editor" aria-label="CSS variable editor" style="border-radius: 0; backdrop-filter: none;">
       <h2>CSS variables</h2>
       <p class="hint">Edit live tokens. Reset clears overrides (variant stylesheet still applies).</p>
+      <output id="text-contrast" aria-live="polite" aria-label="Body text contrast"></output>
       <div id="var-fields"></div>
       <div class="actions">
         <button type="button" id="reset-vars" class="neon-btn">Reset</button>
@@ -266,6 +276,43 @@
         return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
       }
 
+      const sample = document.createElement('canvas');
+      sample.width = sample.height = 1;
+      const pixel = sample.getContext('2d', { willReadFrequently: true });
+      const contrast = document.getElementById('text-contrast');
+
+      function luminance(rgb) {
+        const [r, g, b] = Array.from(rgb.slice(0, 3), (byte) => {
+          const channel = byte / 255;
+          return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+
+      function updateContrast() {
+        if (!pixel) {
+          contrast.textContent = 'Body text contrast unavailable.';
+          return;
+        }
+        const body = getComputedStyle(document.body);
+        pixel.clearRect(0, 0, 1, 1);
+        pixel.fillStyle = body.backgroundColor;
+        pixel.fillRect(0, 0, 1, 1);
+        const background = pixel.getImageData(0, 0, 1, 1).data;
+        if (background[3] !== 255) {
+          contrast.textContent = 'Choose an opaque background to measure body text contrast.';
+          return;
+        }
+        // Composite translucent foregrounds onto the same background before measuring.
+        pixel.fillStyle = body.color;
+        pixel.fillRect(0, 0, 1, 1);
+        const fg = luminance(pixel.getImageData(0, 0, 1, 1).data);
+        const bg = luminance(background);
+        const ratio = (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+        const grade = ratio >= 4.5 ? 'Meets AA' : 'Below AA';
+        contrast.textContent = 'Body text contrast ' + (Math.floor(ratio * 100) / 100).toFixed(2) + ':1 · ' + grade;
+      }
+
       function applyRainConfig() {
         if (window.MatrixRain) {
           MatrixRain.destroy();
@@ -301,6 +348,7 @@
             const sync = (val) => {
               document.documentElement.style.setProperty(key, val);
               text.value = val;
+              if (key === '--neon-text' || key === '--neon-bg') updateContrast();
               if (key === '--neon-primary' || key.startsWith('--matrix-')) {
                 applyRainConfig();
               }
@@ -327,6 +375,7 @@
           }
           varFields.appendChild(row);
         });
+        updateContrast();
       }
 
       function clearInlineOverrides() {
