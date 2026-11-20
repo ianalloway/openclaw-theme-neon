@@ -197,6 +197,7 @@
       <div id="var-fields"></div>
       <div class="actions">
         <button type="button" id="reset-vars" class="neon-btn">Reset</button>
+        <button type="button" id="export-css" class="neon-btn">Download CSS</button>
       </div>
     </aside>
   </div>
@@ -373,6 +374,23 @@
         clearInlineOverrides();
         buildEditor();
         applyRainConfig();
+      });
+
+      document.getElementById('export-css').addEventListener('click', () => {
+        const style = getComputedStyle(document.documentElement);
+        const keys = Array.from(style).filter((key) =>
+          key.startsWith('--neon-') || key.startsWith('--matrix-')
+        ).sort();
+        const declarations = keys.map((key) => '  ' + key + ': ' + style.getPropertyValue(key).trim() + ';');
+        const css = ['/* Load after theme.css. */', ':root {', ...declarations, '}', ''].join('\n');
+        const url = URL.createObjectURL(new Blob([css], { type: 'text/css' }));
+        const link = document.createElement('a');
+        link.download = 'neon-custom.css';
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       });
 
       script.addEventListener('load', () => {
