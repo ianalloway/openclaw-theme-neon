@@ -106,6 +106,8 @@ checkout as shown above.
 
 Includes a variant switcher, matrix-rain toggle, and a CSS variable editor sidebar. The site is published from the `main` branch root so `theme.css`, `matrix-rain.js`, and `variants/` resolve next to `docs/preview.html`.
 
+Choose a variant, adjust its colors or rain settings, and select **Download CSS** in the variable editor. Load the downloaded `neon-custom.css` after `theme.css` on your own page to reuse the current palette and token values.
+
 ### Local preview
 
 No build step. From the repo root:
